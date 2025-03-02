@@ -1,3 +1,18 @@
+// Initialize Three.js scenes
+let heroScene, heroCamera, heroRenderer, heroSphere
+let aboutScene, aboutCamera, aboutRenderer, aboutCube
+
+// Custom cursor
+const cursor = document.getElementById("cursor")
+const cursorBlur = document.getElementById("cursor-blur")
+
+document.addEventListener("mousemove", (e) => {
+  cursor.style.left = e.clientX + "px"
+  cursor.style.top = e.clientY + "px"
+  cursorBlur.style.left = e.clientX - 200 + "px"
+  cursorBlur.style.top = e.clientY - 200 + "px"
+})
+
 // Navigation menu toggle
 const menuToggle = document.querySelector(".menu-toggle")
 const navLinks = document.querySelector(".nav-links")
@@ -16,19 +31,92 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
   })
 })
 
+// Initialize Three.js scenes
+function initThreeJS() {
+  // Hero scene
+  heroScene = new THREE.Scene()
+  heroCamera = new THREE.PerspectiveCamera(75, window.innerWidth / 2 / window.innerHeight, 0.1, 1000)
+  heroRenderer = new THREE.WebGLRenderer({ canvas: document.getElementById("hero-canvas"), alpha: true })
+  heroRenderer.setSize(window.innerWidth / 2, window.innerHeight)
+
+  const geometry = new THREE.SphereGeometry(1, 32, 32)
+  const material = new THREE.MeshPhongMaterial({
+    color: 0x00ffff,
+    wireframe: true,
+    emissive: 0x00ffff,
+    emissiveIntensity: 0.5,
+  })
+  heroSphere = new THREE.Mesh(geometry, material)
+  heroScene.add(heroSphere)
+
+  const light = new THREE.PointLight(0xffffff, 1, 100)
+  light.position.set(0, 0, 10)
+  heroScene.add(light)
+
+  heroCamera.position.z = 5
+
+  // About scene
+  aboutScene = new THREE.Scene()
+  aboutCamera = new THREE.PerspectiveCamera(75, window.innerWidth / 2 / window.innerHeight, 0.1, 1000)
+  aboutRenderer = new THREE.WebGLRenderer({ canvas: document.getElementById("about-canvas"), alpha: true })
+  aboutRenderer.setSize(window.innerWidth / 2, window.innerHeight)
+
+  const cubeGeometry = new THREE.BoxGeometry(1, 1, 1)
+  const cubeMaterial = new THREE.MeshPhongMaterial({
+    color: 0xff00ff,
+    wireframe: true,
+    emissive: 0xff00ff,
+    emissiveIntensity: 0.5,
+  })
+  aboutCube = new THREE.Mesh(cubeGeometry, cubeMaterial)
+  aboutScene.add(aboutCube)
+
+  const aboutLight = new THREE.PointLight(0xffffff, 1, 100)
+  aboutLight.position.set(0, 0, 10)
+  aboutScene.add(aboutLight)
+
+  aboutCamera.position.z = 5
+}
+
+// Animate Three.js scenes
+function animate() {
+  requestAnimationFrame(animate)
+
+  heroSphere.rotation.x += 0.01
+  heroSphere.rotation.y += 0.01
+
+  aboutCube.rotation.x += 0.01
+  aboutCube.rotation.y += 0.01
+
+  heroRenderer.render(heroScene, heroCamera)
+  aboutRenderer.render(aboutScene, aboutCamera)
+}
+
 // Services section
 const services = [
-  { title: "Web Design", description: "Create stunning, responsive websites tailored to your brand." },
-  { title: "Digital Marketing", description: "Boost your online presence and reach your target audience." },
-  { title: "Brand Identity", description: "Develop a unique and memorable brand identity for your business." },
-  { title: "UI/UX Design", description: "Craft intuitive and engaging user experiences for your digital products." },
+  {
+    title: "Immersive Web Experiences",
+    description: "Create stunning, interactive websites that captivate your audience.",
+  },
+  {
+    title: "AI-Powered Solutions",
+    description: "Harness the power of artificial intelligence to revolutionize your business processes.",
+  },
+  {
+    title: "Blockchain Integration",
+    description: "Implement secure, decentralized solutions using cutting-edge blockchain technology.",
+  },
+  {
+    title: "Virtual Reality Development",
+    description: "Transport your users to new worlds with immersive VR experiences.",
+  },
 ]
 
 const servicesGrid = document.querySelector(".services-grid")
 
 services.forEach((service) => {
   const serviceItem = document.createElement("div")
-  serviceItem.classList.add("service-item")
+  serviceItem.classList.add("service-item", "fade-in")
   serviceItem.innerHTML = `
         <h3>${service.title}</h3>
         <p>${service.description}</p>
@@ -38,17 +126,29 @@ services.forEach((service) => {
 
 // Portfolio section
 const portfolioItems = [
-  { title: "Project 1", description: "Web Design", image: "https://via.placeholder.com/300x200" },
-  { title: "Project 2", description: "Branding", image: "https://via.placeholder.com/300x200" },
-  { title: "Project 3", description: "Mobile App", image: "https://via.placeholder.com/300x200" },
-  { title: "Project 4", description: "Digital Marketing", image: "https://via.placeholder.com/300x200" },
+  {
+    title: "Virtual Reality Game",
+    description: "Immersive VR Experience",
+    image: "https://via.placeholder.com/300x200",
+  },
+  { title: "AI-Powered Assistant", description: "Smart Home Solution", image: "https://via.placeholder.com/300x200" },
+  {
+    title: "Blockchain Marketplace",
+    description: "Decentralized Trading Platform",
+    image: "https://via.placeholder.com/300x200",
+  },
+  {
+    title: "Augmented Reality App",
+    description: "Interactive AR Education Tool",
+    image: "https://via.placeholder.com/300x200",
+  },
 ]
 
 const portfolioGrid = document.querySelector(".portfolio-grid")
 
 portfolioItems.forEach((item) => {
   const portfolioItem = document.createElement("div")
-  portfolioItem.classList.add("portfolio-item")
+  portfolioItem.classList.add("portfolio-item", "fade-in")
   portfolioItem.innerHTML = `
         <img src="${item.image}" alt="${item.title}">
         <div class="portfolio-overlay">
@@ -63,14 +163,14 @@ portfolioItems.forEach((item) => {
 const testimonials = [
   {
     name: "John Doe",
-    role: "CEO, Tech Corp",
-    content: "MirionX helped us transform our digital presence. Highly recommended!",
+    role: "CEO, Tech Innovators",
+    content: "MirionX transformed our digital presence with their cutting-edge solutions. Highly recommended!",
     image: "https://via.placeholder.com/100x100",
   },
   {
     name: "Jane Smith",
-    role: "Marketing Director, Brand Co",
-    content: "The team at MirionX is incredibly talented and professional.",
+    role: "CTO, Future Systems",
+    content: "The team at MirionX is incredibly talented and forward-thinking. They delivered beyond our expectations.",
     image: "https://via.placeholder.com/100x100",
   },
 ]
@@ -79,7 +179,7 @@ const testimonialSlider = document.querySelector(".testimonial-slider")
 
 testimonials.forEach((testimonial) => {
   const testimonialItem = document.createElement("div")
-  testimonialItem.classList.add("testimonial-item")
+  testimonialItem.classList.add("testimonial-item", "fade-in")
   testimonialItem.innerHTML = `
         <img src="${testimonial.image}" alt="${testimonial.name}">
         <p>${testimonial.content}</p>
@@ -93,25 +193,25 @@ testimonials.forEach((testimonial) => {
 const teamMembers = [
   {
     name: "Mirion Eve",
-    role: "CEO & Founder",
+    role: "CEO & Visionary",
     image:
       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/IMG-20250120-WA0026.jpg-BBTEZgJSkzrNiDrQ29hfOl3QR6zsI4.jpeg",
   },
   {
     name: "Ebirama Jarju",
-    role: "Creative Director",
+    role: "Creative Technologist",
     image:
       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/IMG-20250208-WA0035.jpg-cch2JHUgraNmHz99kL4LNcu8xEJ7gH.jpeg",
   },
   {
     name: "Junior Animashaun",
-    role: "Technical Lead",
+    role: "AI & Blockchain Expert",
     image:
       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/IMG-20250208-WA0029.jpg-CJOoCmNYcwC8QCkhBHDldy2DBKunHy.jpeg",
   },
   {
     name: "Modoulamin Sanneh",
-    role: "Marketing Strategist",
+    role: "VR/AR Specialist",
     image:
       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/IMG-20250119-WA0010.jpg-uIwb67PqU4DsznkQQ9kRG1JqSVuT6Y.jpeg",
   },
@@ -121,7 +221,7 @@ const teamGrid = document.querySelector(".team-grid")
 
 teamMembers.forEach((member) => {
   const teamMember = document.createElement("div")
-  teamMember.classList.add("team-member")
+  teamMember.classList.add("team-member", "fade-in")
   teamMember.innerHTML = `
         <img src="${member.image}" alt="${member.name}">
         <h3>${member.name}</h3>
@@ -129,7 +229,7 @@ teamMembers.forEach((member) => {
         <div class="social-icons">
             <a href="#" target="_blank"><i class="fab fa-twitter"></i></a>
             <a href="#" target="_blank"><i class="fab fa-linkedin"></i></a>
-            <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-github"></i></a>
         </div>
     `
   teamGrid.appendChild(teamMember)
@@ -157,14 +257,35 @@ contactForm.addEventListener("submit", async (e) => {
   }
 })
 
-// ScrollReveal initialization
-const ScrollReveal = window.ScrollReveal
+// Scroll animations
+function revealOnScroll() {
+  const elements = document.querySelectorAll(".fade-in")
+  elements.forEach((element) => {
+    const elementTop = element.getBoundingClientRect().top
+    const windowHeight = window.innerHeight
+    if (elementTop < windowHeight - 100) {
+      element.classList.add("active")
+    }
+  })
+}
 
-ScrollReveal().reveal(".hero, .services, .about, .portfolio, .testimonials, .team, .contact", {
-  delay: 200,
-  distance: "50px",
-  duration: 1000,
-  easing: "ease-in-out",
-  origin: "bottom",
+window.addEventListener("scroll", revealOnScroll)
+
+// Initialize
+window.addEventListener("load", () => {
+  initThreeJS()
+  animate()
+  revealOnScroll()
+})
+
+// Resize event listener
+window.addEventListener("resize", () => {
+  heroCamera.aspect = window.innerWidth / 2 / window.innerHeight
+  heroCamera.updateProjectionMatrix()
+  heroRenderer.setSize(window.innerWidth / 2, window.innerHeight)
+
+  aboutCamera.aspect = window.innerWidth / 2 / window.innerHeight
+  aboutCamera.updateProjectionMatrix()
+  aboutRenderer.setSize(window.innerWidth / 2, window.innerHeight)
 })
 
